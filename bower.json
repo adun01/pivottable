@@ -23,7 +23,7 @@
   "homepage": "https://pivottable.js.org",
   "repository": {
     "type": "git",
-    "url": "git://github.com/nicolaskruchten/pivottable.git"
+    "url": "git://github.com/adun01/pivottable.git"
   },
   "dependencies": {
     "jquery": ">=1.9.0"
