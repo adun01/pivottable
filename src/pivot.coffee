@@ -648,7 +648,7 @@ callWithJQuery ($) ->
     Pivot Table UI: calls Pivot Table core above with options set by user
     ###
 
-    $.fn.pivotUI = (input, inputOpts, overwrite = false, locale="en") ->
+    $.fn.pivotUI = (input, inputOpts, overwrite = false, locale="en", inputValuesOpts) ->
         locale = "en" if not locales[locale]?
         defaults =
             derivedAttributes: {}
@@ -668,6 +668,31 @@ callWithJQuery ($) ->
             onRefresh: null
             filter: -> true
             sorters: {}
+
+        valuesOpts = $.extend({
+          single: false,
+          inTable: false,
+          className: 'pvtFilterBox',
+          getPosition: ($uiTable, $triangle, $valueList, $rendererControl) ->
+            ref2 = $triangle.position()
+            left = ref2.left + $triangle.width() + 10
+            top = ref2.top + $triangle.height();
+
+            if valuesOpts.inTable
+              left = left + $rendererControl.width()
+              uiTableWidth = $uiTable.width()
+              valueListWidth = $valueList.width()
+              $uiTable.css('position': 'relative')
+              if left + valueListWidth > uiTableWidth
+                return {
+                  left: uiTableWidth - valueListWidth
+                  top: top
+                }
+            {
+              left: left,
+              top: top
+            }
+        }, inputValuesOpts)
 
         localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings)
         localeDefaults =
@@ -741,7 +766,7 @@ callWithJQuery ($) ->
                 do (attr) ->
                     values = (v for v of attrValues[attr])
                     hasExcludedItem = false
-                    valueList = $("<div>").addClass('pvtFilterBox').hide()
+                    valueList = $("<div>").addClass(valuesOpts.className).hide()
 
                     valueList.append $("<h4>").append(
                         $("<span>").text(attr),
@@ -841,8 +866,10 @@ callWithJQuery ($) ->
 
                     triangleLink = $("<span>").addClass('pvtTriangle')
                         .html(" &#x25BE;").bind "click", (e) ->
-                            {left, top} = $(e.currentTarget).position()
-                            valueList.css(left: left+10, top: top+10).show()
+                          valuesOpts.single && $('.' + valuesOpts.className).hide();
+                          valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl))
+                            .show()
+
 
                     attrElem = $("<li>").addClass("axis_#{i}")
                         .append $("<span>").addClass('pvtAttr').text(attr).data("attrName", attr).append(triangleLink)
