@@ -20,14 +20,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/nicolaskruchten/pivottable.git"
+    "url": "git://github.com/adun01/pivottable.git"
   },
   "author": "Nicolas Kruchten",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nicolaskruchten/pivottable/issues"
+    "url": "https://github.com/adun01/pivottable/issues"
   },
-  "homepage": "https://github.com/nicolaskruchten/pivottable",
+  "homepage": "https://github.com/adun01/pivottable",
   "dependencies": {
     "jquery": ">=1.9.0"
   },
