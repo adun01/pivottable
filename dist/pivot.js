@@ -1185,7 +1185,7 @@
     Pivot Table UI: calls Pivot Table core above with options set by user
      */
     $.fn.pivotUI = function(input, inputOpts, overwrite, locale, inputValuesOpts) {
-      var a, aggregator, attr, attrLength, attrValues, c, colOrderArrow, defaults, e, existingOpts, fn1, i, initialRender, l, len1, len2, len3, localeDefaults, localeStrings, materializedInput, n, o, opts, ordering, pivotTable, recordsProcessed, ref, ref1, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, rowOrderArrow, shownAttributes, shownInAggregators, shownInDragDrop, tr1, tr2, uiTable, unused, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, valuesOpts, x;
+      var a, aggregator, attr, attrLength, attrValues, c, closeValueOpts, colOrderArrow, defaults, e, existingOpts, fn1, i, initialRender, l, len1, len2, len3, localeDefaults, localeStrings, materializedInput, n, o, opts, ordering, pivotTable, recordsProcessed, ref, ref1, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, rowOrderArrow, shownAttributes, shownInAggregators, shownInDragDrop, tr1, tr2, uiTable, unused, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, valuesOpts, x;
       if (overwrite == null) {
         overwrite = false;
       }
@@ -1221,6 +1221,7 @@
       };
       valuesOpts = $.extend({
         single: false,
+        closeOutside: false,
         inTable: false,
         className: 'pvtFilterBox',
         getPosition: function($uiTable, $triangle, $valueList, $rendererControl) {
@@ -1248,6 +1249,9 @@
           };
         }
       }, inputValuesOpts);
+      closeValueOpts = function() {
+        return $('.' + valuesOpts.className).hide();
+      };
       localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings);
       localeDefaults = {
         rendererOptions: {
@@ -1471,7 +1475,10 @@
             return closeFilterBox();
           });
           triangleLink = $("<span>").addClass('pvtTriangle').html(" &#x25BE;").bind("click", function(e) {
-            valuesOpts.single && $('.' + valuesOpts.className).hide();
+            valuesOpts.single && closeValueOpts();
+            if (valuesOpts.closeOutside && !$(e.currentTarger).closest('.pvtFilterBox').length) {
+              closeValueOpts();
+            }
             return valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show();
           });
           attrElem = $("<li>").addClass("axis_" + i).append($("<span>").addClass('pvtAttr').text(attr).data("attrName", attr).append(triangleLink));

@@ -671,6 +671,7 @@ callWithJQuery ($) ->
 
         valuesOpts = $.extend({
           single: false,
+          closeOutside: false,
           inTable: false,
           className: 'pvtFilterBox',
           getPosition: ($uiTable, $triangle, $valueList, $rendererControl) ->
@@ -693,6 +694,8 @@ callWithJQuery ($) ->
               top: top
             }
         }, inputValuesOpts)
+
+        closeValueOpts = () -> $('.' + valuesOpts.className).hide()
 
         localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings)
         localeDefaults =
@@ -866,7 +869,9 @@ callWithJQuery ($) ->
 
                     triangleLink = $("<span>").addClass('pvtTriangle')
                         .html(" &#x25BE;").bind "click", (e) ->
-                          valuesOpts.single && $('.' + valuesOpts.className).hide();
+                          valuesOpts.single && closeValueOpts();
+                          if valuesOpts.closeOutside && !$(e.currentTarger).closest('.pvtFilterBox').length
+                            closeValueOpts()
                           valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl))
                             .show()
 
