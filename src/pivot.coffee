@@ -697,7 +697,7 @@ callWithJQuery ($) ->
         closeValueOpts = () ->
           $('.' + valuesOpts.className).hide()
         valuesOpts.closeOutside && $(window.document.body).on('click', (e) ->
-          if !$(e.currentTarger).closest('.' + valuesOpts.className).length && !$(e.target).hasClass('pvtTriangle')
+          if !$(e.target).closest('.' + valuesOpts.className).length && !$(e.target).hasClass('pvtTriangle')
             closeValueOpts())
 
         localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings)

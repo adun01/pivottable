@@ -1253,7 +1253,7 @@
         return $('.' + valuesOpts.className).hide();
       };
       valuesOpts.closeOutside && $(window.document.body).on('click', function(e) {
-        if (!$(e.currentTarger).closest('.' + valuesOpts.className).length && !$(e.target).hasClass('pvtTriangle')) {
+        if (!$(e.target).closest('.' + valuesOpts.className).length && !$(e.target).hasClass('pvtTriangle')) {
           return closeValueOpts();
         }
       });
