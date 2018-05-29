@@ -695,8 +695,9 @@ callWithJQuery ($) ->
             }
         }, inputValuesOpts)
         closeValueOpts = () ->
-          !$(e.currentTarger).closest('.' + valuesOpts.className).length && $('.' + valuesOpts.className).hide()
-        valuesOpts.closeOutside && $(window.document.body).on('click', () -> closeValueOpts())
+          $('.' + valuesOpts.className).hide()
+        valuesOpts.closeOutside && $(window.document.body).on('click', (e) ->
+          !$(e.currentTarger).closest('.' + valuesOpts.className).length && closeValueOpts())
 
         localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings)
         localeDefaults =
