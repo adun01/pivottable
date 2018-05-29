@@ -1253,7 +1253,9 @@
         return $('.' + valuesOpts.className).hide();
       };
       valuesOpts.closeOutside && $(window.document.body).on('click', function(e) {
-        return !$(e.currentTarger).closest('.' + valuesOpts.className).length && closeValueOpts();
+        if (!$(e.currentTarger).closest('.' + valuesOpts.className).length && !$(e.target).hasClass('pvtTriangle')) {
+          return closeValueOpts();
+        }
       });
       localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings);
       localeDefaults = {
