@@ -1250,8 +1250,11 @@
         }
       }, inputValuesOpts);
       closeValueOpts = function() {
-        return $('.' + valuesOpts.className).hide();
+        return !$(e.currentTarger).closest('.' + valuesOpts.className).length && $('.' + valuesOpts.className).hide();
       };
+      valuesOpts.closeOutside && $(window.document.body).on('click', function() {
+        return closeValueOpts();
+      });
       localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings);
       localeDefaults = {
         rendererOptions: {
@@ -1476,9 +1479,6 @@
           });
           triangleLink = $("<span>").addClass('pvtTriangle').html(" &#x25BE;").bind("click", function(e) {
             valuesOpts.single && closeValueOpts();
-            if (valuesOpts.closeOutside && !$(e.currentTarger).closest('.pvtFilterBox').length) {
-              closeValueOpts();
-            }
             return valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show();
           });
           attrElem = $("<li>").addClass("axis_" + i).append($("<span>").addClass('pvtAttr').text(attr).data("attrName", attr).append(triangleLink));

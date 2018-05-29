@@ -694,8 +694,9 @@ callWithJQuery ($) ->
               top: top
             }
         }, inputValuesOpts)
-
-        closeValueOpts = () -> $('.' + valuesOpts.className).hide()
+        closeValueOpts = () ->
+          !$(e.currentTarger).closest('.' + valuesOpts.className).length && $('.' + valuesOpts.className).hide()
+        valuesOpts.closeOutside && $(window.document.body).on('click', () -> closeValueOpts())
 
         localeStrings = $.extend(true, {}, locales.en.localeStrings, locales[locale].localeStrings)
         localeDefaults =
@@ -870,8 +871,6 @@ callWithJQuery ($) ->
                     triangleLink = $("<span>").addClass('pvtTriangle')
                         .html(" &#x25BE;").bind "click", (e) ->
                           valuesOpts.single && closeValueOpts();
-                          if valuesOpts.closeOutside && !$(e.currentTarger).closest('.pvtFilterBox').length
-                            closeValueOpts()
                           valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl))
                             .show()
 
