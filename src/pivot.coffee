@@ -870,12 +870,65 @@ callWithJQuery ($) ->
                                 .removeClass("changed").prop("checked", true)
                             closeFilterBox()
 
+                    generateNewP = (item) =>
+                        '<p class="' + (!item.value && 'extension') + '"><label>
+                        <input type="checkbox" class="pvtFilter" ' + (item.checked && 'checked="checked"') + '>
+                        <span class="value">' + item.title + '</span>
+                        <span class="count">' + (item.value || '(0)') + '</span></label></p>'
+                    addFullList = (valueList, extensions) =>
+                        arr = [];
+                        valueList.find('label').each((i, el) =>
+                            arr.push({
+                                title: $(el).find('.value').text(),
+                                value: $(el).find('.count').text(),
+                                checked: $(el).find('input').prop('checked'),
+                                data: $(el).find('input').data()
+                            });
+                        );
+                        newList = '';
+                        extensions.list.forEach((item) =>
+                            field = arr.find((field) => field.title == item.title);
+                            newList += generateNewP(field || item);
+                        );
+                        valueList.find('.pvtCheckContainer').replaceWith('<div class="pvtCheckContainer">' + newList + '</div>');
+                        valueList.find('label').each((i, el) =>
+                            data = arr.find((item) => item.title == $(el).find('.value').text());
+                            if (data)
+                                for name of data.data
+                                    $input = $(el).find('input');
+                                    $input.data(name, data.data[name]);
+                                    $input.bind("change", () => $input.toggleClass("changed"));
+                        );
+                    hideFullList = (valueList) =>
+                        valueList.find('p').each((i, el) =>
+                            if $(el).hasClass('extension')
+                                $(el).remove();
+                        )
                     triangleLink = $("<span>").addClass('pvtTriangle')
-                        .html(" &#x25BE;").bind "click", (e) ->
-                          valuesOpts.single && closeValueOpts();
-                          valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl))
-                            .show()
+                        .html(" &#x25BE;").bind "click", (e) =>
+                            valuesOpts.single && closeValueOpts();
+                            extensions = inputOpts.extensionFullList.find((extension) => extension.name == attr);
+                            if extensions
+                                if !valueList.find('button.open-btn').length
+                                    valueList.find('button.open-btn').remove();
+                                    valueList.find('button.close-btn').remove();
+                                    valueList.append('<button class="open-btn">открыть полный список</button>');
+                                    valueList.append('<button class="close-btn">скрыть полный список</button>');
+                                    $open = valueList.find('button.open-btn');
+                                    $close = valueList.find('button.close-btn');
+                                    $close.hide();
+                                    $open.on('click', () =>
+                                        addFullList(valueList, extensions);
+                                        $open.hide();
+                                        $close.show();
+                                    );
+                                    $close.on('click', () =>
+                                        hideFullList(valueList, extensions);
+                                        $close.hide();
+                                        $open.show();
+                                    );
 
+                            valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show()
 
                     attrElem = $("<li>").addClass("axis_#{i}")
                         .append $("<span>").addClass('pvtAttr').text(attr).data("attrName", attr).append(triangleLink)
@@ -1005,19 +1058,21 @@ callWithJQuery ($) ->
                 exclusions = {}
                 @find('input.pvtFilter').not(':checked').each ->
                     filter = $(this).data("filter")
-                    if exclusions[filter[0]]?
-                        exclusions[filter[0]].push( filter[1] )
-                    else
-                        exclusions[filter[0]] = [ filter[1] ]
+                    if filter
+                        if exclusions[filter[0]]?
+                            exclusions[filter[0]].push( filter[1] )
+                        else
+                            exclusions[filter[0]] = [ filter[1] ]
                 #include inclusions when exclusions present
                 inclusions = {}
                 @find('input.pvtFilter:checked').each ->
                     filter = $(this).data("filter")
-                    if exclusions[filter[0]]?
-                        if inclusions[filter[0]]?
-                            inclusions[filter[0]].push( filter[1] )
-                        else
-                            inclusions[filter[0]] = [ filter[1] ]
+                    if filter
+                        if exclusions[filter[0]]?
+                            if inclusions[filter[0]]?
+                                inclusions[filter[0]].push( filter[1] )
+                            else
+                                inclusions[filter[0]] = [ filter[1] ]
 
                 subopts.filter = (record) ->
                     return false if not opts.filter(record)

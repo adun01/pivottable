@@ -1363,7 +1363,7 @@
           unused.addClass('pvtHorizList');
         }
         fn1 = function(attr) {
-          var attrElem, checkContainer, closeFilterBox, controls, filterItem, filterItemExcluded, finalButtons, hasExcludedItem, len2, n, placeholder, ref1, sorter, triangleLink, v, value, valueCount, valueList, values;
+          var addFullList, attrElem, checkContainer, closeFilterBox, controls, filterItem, filterItemExcluded, finalButtons, generateNewP, hasExcludedItem, hideFullList, len2, n, placeholder, ref1, sorter, triangleLink, v, value, valueCount, valueList, values;
           values = (function() {
             var results;
             results = [];
@@ -1479,10 +1479,91 @@
             valueList.find(".changed:not(:checked)").removeClass("changed").prop("checked", true);
             return closeFilterBox();
           });
-          triangleLink = $("<span>").addClass('pvtTriangle').html(" &#x25BE;").bind("click", function(e) {
-            valuesOpts.single && closeValueOpts();
-            return valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show();
-          });
+          generateNewP = (function(_this) {
+            return function(item) {
+              return '<p class="' + (!item.value && 'extension') + '"><label> <input type="checkbox" class="pvtFilter" ' + (item.checked && 'checked="checked"') + '> <span class="value">' + item.title + '</span> <span class="count">' + (item.value || '(0)') + '</span></label></p>';
+            };
+          })(this);
+          addFullList = (function(_this) {
+            return function(valueList, extensions) {
+              var arr, newList;
+              arr = [];
+              valueList.find('label').each(function(i, el) {
+                return arr.push({
+                  title: $(el).find('.value').text(),
+                  value: $(el).find('.count').text(),
+                  checked: $(el).find('input').prop('checked'),
+                  data: $(el).find('input').data()
+                });
+              });
+              newList = '';
+              extensions.list.forEach(function(item) {
+                var field;
+                field = arr.find(function(field) {
+                  return field.title === item.title;
+                });
+                return newList += generateNewP(field || item);
+              });
+              valueList.find('.pvtCheckContainer').replaceWith('<div class="pvtCheckContainer">' + newList + '</div>');
+              return valueList.find('label').each(function(i, el) {
+                var $input, data, name, results;
+                data = arr.find(function(item) {
+                  return item.title === $(el).find('.value').text();
+                });
+                if (data) {
+                  results = [];
+                  for (name in data.data) {
+                    $input = $(el).find('input');
+                    $input.data(name, data.data[name]);
+                    results.push($input.bind("change", function() {
+                      return $input.toggleClass("changed");
+                    }));
+                  }
+                  return results;
+                }
+              });
+            };
+          })(this);
+          hideFullList = (function(_this) {
+            return function(valueList) {
+              return valueList.find('p').each(function(i, el) {
+                if ($(el).hasClass('extension')) {
+                  return $(el).remove();
+                }
+              });
+            };
+          })(this);
+          triangleLink = $("<span>").addClass('pvtTriangle').html(" &#x25BE;").bind("click", (function(_this) {
+            return function(e) {
+              var $close, $open, extensions;
+              valuesOpts.single && closeValueOpts();
+              extensions = inputOpts.extensionFullList.find(function(extension) {
+                return extension.name === attr;
+              });
+              if (extensions) {
+                if (!valueList.find('button.open-btn').length) {
+                  valueList.find('button.open-btn').remove();
+                  valueList.find('button.close-btn').remove();
+                  valueList.append('<button class="open-btn">открыть полный список</button>');
+                  valueList.append('<button class="close-btn">скрыть полный список</button>');
+                  $open = valueList.find('button.open-btn');
+                  $close = valueList.find('button.close-btn');
+                  $close.hide();
+                  $open.on('click', function() {
+                    addFullList(valueList, extensions);
+                    $open.hide();
+                    return $close.show();
+                  });
+                  $close.on('click', function() {
+                    hideFullList(valueList, extensions);
+                    $close.hide();
+                    return $open.show();
+                  });
+                }
+              }
+              return valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show();
+            };
+          })(this));
           attrElem = $("<li>").addClass("axis_" + i).append($("<span>").addClass('pvtAttr').text(attr).data("attrName", attr).append(triangleLink));
           if (hasExcludedItem) {
             attrElem.addClass('pvtFilteredAttribute');
@@ -1625,21 +1706,25 @@
             _this.find('input.pvtFilter').not(':checked').each(function() {
               var filter;
               filter = $(this).data("filter");
-              if (exclusions[filter[0]] != null) {
-                return exclusions[filter[0]].push(filter[1]);
-              } else {
-                return exclusions[filter[0]] = [filter[1]];
+              if (filter) {
+                if (exclusions[filter[0]] != null) {
+                  return exclusions[filter[0]].push(filter[1]);
+                } else {
+                  return exclusions[filter[0]] = [filter[1]];
+                }
               }
             });
             inclusions = {};
             _this.find('input.pvtFilter:checked').each(function() {
               var filter;
               filter = $(this).data("filter");
-              if (exclusions[filter[0]] != null) {
-                if (inclusions[filter[0]] != null) {
-                  return inclusions[filter[0]].push(filter[1]);
-                } else {
-                  return inclusions[filter[0]] = [filter[1]];
+              if (filter) {
+                if (exclusions[filter[0]] != null) {
+                  if (inclusions[filter[0]] != null) {
+                    return inclusions[filter[0]].push(filter[1]);
+                  } else {
+                    return inclusions[filter[0]] = [filter[1]];
+                  }
                 }
               }
             });
