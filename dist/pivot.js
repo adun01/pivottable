@@ -1537,28 +1537,30 @@
             return function(e) {
               var $close, $open, extensions;
               valuesOpts.single && closeValueOpts();
-              extensions = inputOpts.extensionFullList.find(function(extension) {
-                return extension.name === attr;
-              });
-              if (extensions) {
-                if (!valueList.find('button.open-btn').length) {
-                  valueList.find('button.open-btn').remove();
-                  valueList.find('button.close-btn').remove();
-                  valueList.append('<button class="open-btn">открыть полный список</button>');
-                  valueList.append('<button class="close-btn">скрыть полный список</button>');
-                  $open = valueList.find('button.open-btn');
-                  $close = valueList.find('button.close-btn');
-                  $close.hide();
-                  $open.on('click', function() {
-                    addFullList(valueList, extensions);
-                    $open.hide();
-                    return $close.show();
-                  });
-                  $close.on('click', function() {
-                    hideFullList(valueList, extensions);
+              if (inputOpts.extensionFullList) {
+                extensions = inputOpts.extensionFullList.find(function(extension) {
+                  return extension.name === attr;
+                });
+                if (extensions) {
+                  if (!valueList.find('button.open-btn').length) {
+                    valueList.find('button.open-btn').remove();
+                    valueList.find('button.close-btn').remove();
+                    valueList.append('<button class="open-btn">открыть полный список</button>');
+                    valueList.append('<button class="close-btn">скрыть полный список</button>');
+                    $open = valueList.find('button.open-btn');
+                    $close = valueList.find('button.close-btn');
                     $close.hide();
-                    return $open.show();
-                  });
+                    $open.on('click', function() {
+                      addFullList(valueList, extensions);
+                      $open.hide();
+                      return $close.show();
+                    });
+                    $close.on('click', function() {
+                      hideFullList(valueList, extensions);
+                      $close.hide();
+                      return $open.show();
+                    });
+                  }
                 }
               }
               return valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show();

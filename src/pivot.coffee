@@ -907,26 +907,28 @@ callWithJQuery ($) ->
                     triangleLink = $("<span>").addClass('pvtTriangle')
                         .html(" &#x25BE;").bind "click", (e) =>
                             valuesOpts.single && closeValueOpts();
-                            extensions = inputOpts.extensionFullList.find((extension) => extension.name == attr);
-                            if extensions
-                                if !valueList.find('button.open-btn').length
-                                    valueList.find('button.open-btn').remove();
-                                    valueList.find('button.close-btn').remove();
-                                    valueList.append('<button class="open-btn">открыть полный список</button>');
-                                    valueList.append('<button class="close-btn">скрыть полный список</button>');
-                                    $open = valueList.find('button.open-btn');
-                                    $close = valueList.find('button.close-btn');
-                                    $close.hide();
-                                    $open.on('click', () =>
-                                        addFullList(valueList, extensions);
-                                        $open.hide();
-                                        $close.show();
-                                    );
-                                    $close.on('click', () =>
-                                        hideFullList(valueList, extensions);
-                                        $close.hide();
-                                        $open.show();
-                                    );
+                            if inputOpts.extensionFullList
+
+                              extensions = inputOpts.extensionFullList.find((extension) => extension.name == attr);
+                              if extensions
+                                  if !valueList.find('button.open-btn').length
+                                      valueList.find('button.open-btn').remove();
+                                      valueList.find('button.close-btn').remove();
+                                      valueList.append('<button class="open-btn">открыть полный список</button>');
+                                      valueList.append('<button class="close-btn">скрыть полный список</button>');
+                                      $open = valueList.find('button.open-btn');
+                                      $close = valueList.find('button.close-btn');
+                                      $close.hide();
+                                      $open.on('click', () =>
+                                          addFullList(valueList, extensions);
+                                          $open.hide();
+                                          $close.show();
+                                      );
+                                      $close.on('click', () =>
+                                          hideFullList(valueList, extensions);
+                                          $close.hide();
+                                          $open.show();
+                                      );
 
                             valueList.css(valuesOpts.getPosition(uiTable, $(e.currentTarget), valueList, rendererControl)).show()
 
